@@ -1,0 +1,16 @@
+﻿using Demo.web.Models.Test;
+@{
+    ViewData["Title"] = "Test Home";
+}
+<form action="/Test/Index" method="post">
+<div>
+        <label for="name">Name:</label>
+        <input type="text" name="name" value="@Model.Name" />
+</div>    
+<div>
+        <label for="email">Email:</label>
+        <input type="text" name="email" value="@Model.Email" />
+</div>    
+<input type="submit" name="submit" value="Submit" />
+ 
+</form>

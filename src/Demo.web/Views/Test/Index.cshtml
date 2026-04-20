@@ -1,16 +1,18 @@
-﻿using Demo.web.Models.Test;
+﻿
+@model Demo.web.Models.Test.TestHome
 @{
     ViewData["Title"] = "Test Home";
 }
-<form action="/Test/Index" method="post">
-<div>
-        <label for="name">Name:</label>
-        <input type="text" name="name" value="@Model.Name" />
-</div>    
-<div>
-        <label for="email">Email:</label>
-        <input type="text" name="email" value="@Model.Email" />
-</div>    
-<input type="submit" name="submit" value="Submit" />
- 
+<form asp-controller="Test" asp-action="Index" asp-antiforgery="true" method="post">
+    <div>
+        <label asp-for="Name">Name: </label>
+        <input type="text" asp-for="Name" class="myClass" />
+    </div>
+    <div>
+        <label asp-for="Email">Email: </label>
+        <input type="text" asp-for="Email" />
+    </div>
+    <input type="submit" value="Submit" />
 </form>
+
+@Html.TextBoxFor(x => x.Name, new { @class = "myClass" }) @*html tag helper*@ 

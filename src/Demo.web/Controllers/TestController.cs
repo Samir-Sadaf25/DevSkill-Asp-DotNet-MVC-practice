@@ -10,11 +10,14 @@ namespace Demo.web.Controllers
             var model = new TestHome { Name = "samir", Email = "samirsadaf@gmail.com" };
             return View(model);
         }
-        [HttpPost]
+        [HttpPost,ValidateAntiForgeryToken]
         public IActionResult Index(TestHome model)
         {
-            var name = model.Name;
-            var email = model.Email;
+            if(ModelState.IsValid)
+            {
+                var name = model.Name;
+                var email = model.Email;
+            }
             return View(model);
         }
     }

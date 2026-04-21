@@ -1,13 +1,21 @@
 ﻿using Demo.web.Models.Test;
 using Microsoft.AspNetCore.Mvc;
-
+using Demo.web.Models;
 namespace Demo.web.Controllers
 {
     public class TestController : Controller
     {
         public IActionResult Index()
         {
-            var model = new TestHome { Name = "samir", Email = "samirsadaf@gmail.com" };
+            var model = new TestHome
+            { Name = "samir",
+              Email = "samirsadaf@gmail.com",
+              partialModel = new PartialModel
+              {
+                  Address = "Dhaka"
+              }
+            };
+            
             return View(model);
         }
         [HttpPost,ValidateAntiForgeryToken]

@@ -1,9 +1,12 @@
 ﻿
 @model Demo.web.Models.Test.TestHome
+
 @{
     ViewData["Title"] = "Test Home";
 }
+<partial name="_DivPartial" model="Model.partialModel" />
 <form asp-controller="Test" asp-action="Index" asp-antiforgery="true" method="post">
+   
     <div>
         <label asp-for="Name">Name: </label>
         <input type="text" asp-for="Name" class="myClass" />
@@ -15,4 +18,4 @@
     <input type="submit" value="Submit" />
 </form>
 
-@Html.TextBoxFor(x => x.Name, new { @class = "myClass" }) @*html tag helper*@ 
+@* @Html.TextBoxFor(x => x.Name, new { @class = "myClass" }) @*html tag helper*@ 

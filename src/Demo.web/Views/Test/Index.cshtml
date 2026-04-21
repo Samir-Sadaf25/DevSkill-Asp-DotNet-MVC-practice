@@ -4,6 +4,13 @@
 @{
     ViewData["Title"] = "Test Home";
 }
+@section Styles{
+    <style>
+        .test{
+            color: blue;
+        }
+    </style>
+}
 <partial name="_DivPartial" model="Model.partialModel" />
 <form asp-controller="Test" asp-action="Index" asp-antiforgery="true" method="post">
    
@@ -17,5 +24,9 @@
     </div>
     <input type="submit" value="Submit" />
 </form>
-
+@section scripts{
+    <script>
+        alert("this alert is for a particular section");
+    </script>
+}
 @* @Html.TextBoxFor(x => x.Name, new { @class = "myClass" }) @*html tag helper*@ 

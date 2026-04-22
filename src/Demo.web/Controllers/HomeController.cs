@@ -1,3 +1,4 @@
+using Demo.web.Codes;
 using Demo.web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -6,9 +7,30 @@ namespace Demo.web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IMembership _membership;
+        
+        public HomeController(IMembership membership)
+        {
+            _membership = membership;
+        }
+
+
         public IActionResult Index(string? id)
         {
             return View();
+        }
+
+        public IActionResult CreateAccount()
+        {
+            var model = new AccountModel();
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult CreateAccount(AccountModel model)
+        {
+            _membership.CreateUserAccount(model.username, model.password);
+
+            return View(model);
         }
 
         public IActionResult Privacy()

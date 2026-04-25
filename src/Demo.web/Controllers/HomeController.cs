@@ -9,7 +9,7 @@ namespace Demo.web.Controllers
     {
         private readonly IMembership _membership;
         
-        public HomeController(IMembership membership)
+        public HomeController([FromKeyedServices("setup-1")] IMembership membership)
         {
             _membership = membership;
         }

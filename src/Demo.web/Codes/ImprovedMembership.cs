@@ -2,7 +2,7 @@
 {
     public class ImprovedMembership : IMembership
     {
-        public ImprovedMembership(string name)
+        public ImprovedMembership()
         {
 
         }

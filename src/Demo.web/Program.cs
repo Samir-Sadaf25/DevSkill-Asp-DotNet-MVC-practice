@@ -2,7 +2,15 @@ using Demo.web.Codes;
 using Demo.web.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
+using Serilog;
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day)
+    .CreateBootstrapLogger();
+
+try
+{ 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,17 +19,28 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-//builder.Services.AddScoped<IMembership, ImprovedMembership>(); // one instance per http lifecycle
-//builder.Services.AddSingleton<IMembership, ImprovedMembership>(); // one instance per application lifecycle
-//builder.Services.AddTransient<IMembership, ImprovedMembership>();// always new instance
+    //builder.Services.AddScoped<IMembership, ImprovedMembership>(); // one instance per http lifecycle
+    //builder.Services.AddSingleton<IMembership, ImprovedMembership>(); // one instance per application lifecycle
+    //builder.Services.AddTransient<IMembership, ImprovedMembership>();// always new instance
 
-//builder.Services.AddKeyedScoped<IMembership, Membership>("setup-1");
-//builder.Services.AddKeyedScoped<IMembership, ImprovedMembership>("setup-2");
+    builder.Services.AddKeyedScoped<IMembership, Membership>("setup-1");
+    builder.Services.AddKeyedScoped<IMembership, ImprovedMembership>("setup-2");
 
-builder.Services.AddScoped<IMembership, ImprovedMembership>(s => new ImprovedMembership("trial"));
+   // builder.Services.AddScoped<IMembership, ImprovedMembership>(s => new ImprovedMembership("trial"));
 
+    #region serilog configuration
+    builder.Host.UseSerilog((context, lc) => lc
+        .MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+        .Enrich.FromLogContext()
+        .ReadFrom.Configuration(context.Configuration)
+        );
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    #endregion
+
+    
+
+    builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
@@ -54,4 +73,16 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
+    Log.Information("application started");
+
 app.Run();
+}
+catch (Exception e)
+{
+    Log.Fatal(e, "application crashed");
+
+}
+finally
+{
+    Log.CloseAndFlush();
+}

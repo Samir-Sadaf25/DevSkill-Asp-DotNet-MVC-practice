@@ -1,6 +1,7 @@
 using Demo.web.Codes;
 using Demo.web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using System.Diagnostics;
 
 namespace Demo.web.Controllers
@@ -8,15 +9,17 @@ namespace Demo.web.Controllers
     public class HomeController : Controller
     {
         private readonly IMembership _membership;
-        
-        public HomeController([FromKeyedServices("setup-1")] IMembership membership)
+        private readonly ILogger<HomeController> _logger;
+        public HomeController([FromKeyedServices("setup-1")] IMembership membership, ILogger<HomeController> logger)
         {
             _membership = membership;
+            _logger = logger;
         }
 
 
         public IActionResult Index(string? id)
         {
+            Log.Debug("i am in home controller");
             return View();
         }
 

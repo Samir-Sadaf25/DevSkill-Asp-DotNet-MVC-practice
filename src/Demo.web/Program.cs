@@ -1,3 +1,5 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Demo.web.Codes;
 using Demo.web.Data;
 using Microsoft.AspNetCore.Identity;
@@ -23,8 +25,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
     //builder.Services.AddSingleton<IMembership, ImprovedMembership>(); // one instance per application lifecycle
     //builder.Services.AddTransient<IMembership, ImprovedMembership>();// always new instance
 
-    builder.Services.AddKeyedScoped<IMembership, Membership>("setup-1");
-    builder.Services.AddKeyedScoped<IMembership, ImprovedMembership>("setup-2");
+    //builder.Services.AddKeyedScoped<IMembership, Membership>("setup-1");
+    //builder.Services.AddKeyedScoped<IMembership, ImprovedMembership>("setup-2");
 
    // builder.Services.AddScoped<IMembership, ImprovedMembership>(s => new ImprovedMembership("trial"));
 
@@ -38,7 +40,20 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
     #endregion
 
-    
+    #region Autofac Configuration
+    builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+    builder.Host.ConfigureContainer<ContainerBuilder>(ContainerBuilder =>
+    {
+        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>();
+        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>().InstancePerLifetimeScope(); // add scoped
+        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>().SingleInstance(); // add singleton
+        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>().InstancePerDependency(); // addTransient
+        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>().InstancePerDependency().WithParameter("name", "asp dot net");
+    });
+
+    #endregion
+
+
 
     builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();

@@ -2,20 +2,12 @@
 {
     public class UnitOfWork
     {
-        List<object> _tracker; // product,user,order
+        //List<object> _tracker; // products,users,orders
 
-        public void insert(object o)
-        {
-            _tracker.Add(o);
-        }
-        public void update(object o)
-        {
-            _tracker[0] = o;
-        }
-        public void delete(object o)
-        {
-            _tracker.Remove(o);
-        }
+        public Repository<Product> Products { get; set; }
+        //public Repository<Order> orders { get; set; }
+
+       
         public void save()
         {
             //transaction start

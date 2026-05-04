@@ -23,9 +23,10 @@ namespace Demo.web.Controllers
             List<Product> product = new List<Product>();
             product.Add(new Product());
 
-            ProductRepository productRepository = new ProductRepository();
-            productRepository.Add(new Product());
-            productRepository.Update(new Product());
+            UnitOfWork uow = new UnitOfWork();
+            uow.Products.Add(new Product());
+            //uow.orders.Add(new Order());
+            uow.save(); // works like db context
 
             Log.Debug("i am in home controller");
             return View();

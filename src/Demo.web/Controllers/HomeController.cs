@@ -19,6 +19,14 @@ namespace Demo.web.Controllers
 
         public IActionResult Index(string? id)
         {
+
+            List<Product> product = new List<Product>();
+            product.Add(new Product());
+
+            ProductRepository productRepository = new ProductRepository();
+            productRepository.Add(new Product());
+            productRepository.Update(new Product());
+
             Log.Debug("i am in home controller");
             return View();
         }

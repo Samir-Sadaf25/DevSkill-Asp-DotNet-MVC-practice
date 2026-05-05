@@ -28,6 +28,14 @@ namespace Demo.web.Controllers
             //uow.orders.Add(new Order());
             uow.save(); // works like db context
 
+            /*
+              AppDbContext c = new AppDbContext();
+              var products = c.Products.Where(x => x.Price > 100); 🚫 Direct DbContext now allowed
+
+            // var products = _productRepository.GetBestSellingProducts(5);//Controller does NOT know DB logic
+
+             */
+
             Log.Debug("i am in home controller");
             return View();
         }

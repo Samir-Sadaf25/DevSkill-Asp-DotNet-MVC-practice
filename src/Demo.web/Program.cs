@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Core.Types;
 using Serilog;
+using Demo.Infrastructure.Extensions;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day)
@@ -22,14 +23,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-    //builder.Services.AddScoped<IMembership, ImprovedMembership>(); // one instance per http lifecycle
-    //builder.Services.AddSingleton<IMembership, ImprovedMembership>(); // one instance per application lifecycle
-    //builder.Services.AddTransient<IMembership, ImprovedMembership>();// always new instance
-
-    //builder.Services.AddKeyedScoped<IMembership, Membership>("setup-1");
-    //builder.Services.AddKeyedScoped<IMembership, ImprovedMembership>("setup-2");
-
-   // builder.Services.AddScoped<IMembership, ImprovedMembership>(s => new ImprovedMembership("trial"));
+    #region Dependency injection 
+    builder.Services.AddInfrastructureDependency();
+      
+    #endregion
 
     #region serilog configuration
     builder.Host.UseSerilog((context, lc) => lc
@@ -42,12 +39,12 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
     #endregion
 
     #region Autofac Configuration
-    builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
-    builder.Host.ConfigureContainer<ContainerBuilder>(ContainerBuilder =>
-    {
-        ContainerBuilder.RegisterModule(new WebModule(connectionString)); // binding gula akhane boshbe
+    //builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+    //builder.Host.ConfigureContainer<ContainerBuilder>(ContainerBuilder =>
+    //{
+    //    ContainerBuilder.RegisterModule(new WebModule(connectionString)); // binding gula akhane boshbe
         
-    });
+    //});
 
     #endregion
 

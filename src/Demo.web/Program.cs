@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Demo.web;
 using Demo.web.Codes;
 using Demo.web.Data;
 using Microsoft.AspNetCore.Identity;
@@ -44,11 +45,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
     builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
     builder.Host.ConfigureContainer<ContainerBuilder>(ContainerBuilder =>
     {
-        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>();
-        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>().InstancePerLifetimeScope(); // add scoped
-        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>().SingleInstance(); // add singleton
-        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>().InstancePerDependency(); // addTransient
-        ContainerBuilder.RegisterType<ImprovedMembership>().As<IMembership>().InstancePerDependency().WithParameter("name", "asp dot net");
+        ContainerBuilder.RegisterModule(new WebModule(connectionString)); // binding gula akhane boshbe
+        
     });
 
     #endregion

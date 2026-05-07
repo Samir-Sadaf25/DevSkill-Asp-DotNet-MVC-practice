@@ -2,12 +2,13 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Demo.web;
 using Demo.web.Codes;
-using Demo.web.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Core.Types;
 using Serilog;
 using Demo.Infrastructure.Extensions;
+using Demo.Infrastructure.Data;
+using System.Reflection;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day)
@@ -19,9 +20,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+    var migrationAssembly = Assembly.GetAssembly(typeof(ApplicationDbContext));
+
+    #region DbContext configuration
+   
+    builder.Services.AddDbContext(connectionString, migrationAssembly);
+    
+    #endregion
+
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
     #region Dependency injection 
     builder.Services.AddInfrastructureDependency();

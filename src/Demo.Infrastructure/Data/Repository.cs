@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Demo.Infrastructure.Data
 {
-    public class Repository<TAggregateRoot, Tkey> : IRepository<TAggregateRoot, Tkey>, IDisposable
+    public abstract class Repository<TAggregateRoot, Tkey> : IRepository<TAggregateRoot, Tkey>, IDisposable
            where TAggregateRoot : class, IAggregateRoot<Tkey>
             where Tkey : IComparable
 

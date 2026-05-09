@@ -23,17 +23,19 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
     var migrationAssembly = Assembly.GetAssembly(typeof(ApplicationDbContext));
 
-    #region DbContext configuration
-   
-    builder.Services.AddDbContext(connectionString, migrationAssembly);
     
-    #endregion
 
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
     #region Dependency injection 
     builder.Services.AddInfrastructureDependency();
-      
+
+    #endregion
+
+    #region DbContext configuration
+
+    builder.Services.AddDbContext(connectionString, migrationAssembly);
+
     #endregion
 
     #region serilog configuration

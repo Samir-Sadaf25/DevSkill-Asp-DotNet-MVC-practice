@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Demo.Infrastructure.Data
 {
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public abstract class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly DbContext _dbContext;
         public UnitOfWork(DbContext dbContext)

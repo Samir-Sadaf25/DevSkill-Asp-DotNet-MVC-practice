@@ -1,3 +1,5 @@
+using Demo.Application.Contracts;
+using Demo.Domain.Entities;
 using Demo.web.Codes;
 using Demo.web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +10,12 @@ namespace Demo.web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IMembership _membership;
+       // private readonly IMembership _membership;
         private readonly ILogger<HomeController> _logger;
-        public HomeController([FromKeyedServices("setup-1")] IMembership membership, ILogger<HomeController> logger)
+        private readonly IApplicationUnitOfWork _unitOfWork;
+        public HomeController(IApplicationUnitOfWork unitOfWork, ILogger<HomeController> logger)
         {
-            _membership = membership;
+            _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
@@ -20,7 +23,8 @@ namespace Demo.web.Controllers
         public IActionResult Index(string? id)
         {
 
-
+            _unitOfWork.ProductRepository.add(new Product { Id = Guid.NewGuid(), Name = "sample product", Price = 9.99 });
+            _unitOfWork.save();
             //Log.Debug("i am in home controller");
             return View();
         }
@@ -33,7 +37,7 @@ namespace Demo.web.Controllers
         [HttpPost]
         public IActionResult CreateAccount(AccountModel model)
         {
-            _membership.CreateUserAccount(model.username, model.password);
+          
 
             return View(model);
         }

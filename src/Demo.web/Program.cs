@@ -12,6 +12,7 @@ using System.Reflection;
 using Cortex.Mediator.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Demo.Application.Features.Products.Command;
+using Mapster;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day)
@@ -38,6 +39,18 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     #region DbContext configuration
 
     builder.Services.AddDbContext(connectionString, migrationAssembly);
+
+    #endregion
+
+    #region Mapster Configuration
+    // Custom Configuration
+    //var config = TypeAdapterConfig.GlobalSettings;
+    //config.Scan(typeof(MapsterConfiguration).Assembly);
+    //builder.Services.AddSingleton(config);
+    //builder.Services.AddScoped<IMapper, ServiceMapper>();
+
+    // Default Configuration
+    builder.Services.AddMapster();
 
     #endregion
 

@@ -1,4 +1,6 @@
+using Cortex.Mediator;
 using Demo.Application.Contracts;
+using Demo.Application.Features.Products.Command;
 using Demo.Domain.Entities;
 using Demo.web.Codes;
 using Demo.web.Models;
@@ -12,19 +14,25 @@ namespace Demo.web.Controllers
     {
        // private readonly IMembership _membership;
         private readonly ILogger<HomeController> _logger;
-        private readonly IApplicationUnitOfWork _unitOfWork;
-        public HomeController(IApplicationUnitOfWork unitOfWork, ILogger<HomeController> logger)
+        private readonly IMediator _mediator;
+
+        public HomeController( ILogger<HomeController> logger,IMediator mediator)
         {
-            _unitOfWork = unitOfWork;
+            
             _logger = logger;
+            _mediator = mediator;
         }
 
 
         public IActionResult Index(string? id)
         {
-
-            _unitOfWork.ProductRepository.add(new Product { Id = Guid.NewGuid(), Name = "sample product", Price = 9.99 });
-            _unitOfWork.save();
+            var command = new ProductAddCommand
+            {
+                Id = Guid.NewGuid(),
+                Name = "Product 2",
+                Price = 100
+            };
+            var result = _mediator.SendCommandAsync(command).Result;
             //Log.Debug("i am in home controller");
             return View();
         }

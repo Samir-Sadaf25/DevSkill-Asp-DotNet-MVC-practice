@@ -9,6 +9,9 @@ using Serilog;
 using Demo.Infrastructure.Extensions;
 using Demo.Infrastructure.Data;
 using System.Reflection;
+using Cortex.Mediator.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Demo.Application.Features.Products.Command;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day)
@@ -38,6 +41,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
     #endregion
 
+    #region Cortex Mediator Configuration
+    builder.Services.AddCortexMediator(
+        new[] {typeof(Program),typeof(ProductAddCommand)},
+        Options => Options.AddDefaultBehaviors()
+        );
+     
+    #endregion
+
     #region serilog configuration
     builder.Host.UseSerilog((context, lc) => lc
         .MinimumLevel.Debug()
@@ -47,6 +58,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
         );
 
     #endregion
+
 
     #region Autofac Configuration
     //builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());

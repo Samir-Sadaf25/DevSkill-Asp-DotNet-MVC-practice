@@ -15,7 +15,7 @@ namespace Demo.Infrastructure.Data
         }
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _dbContext.Dispose();
         }
 
         public void save()

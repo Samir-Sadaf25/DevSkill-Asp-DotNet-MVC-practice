@@ -1,6 +1,7 @@
 ﻿using Cortex.Mediator.Commands;
 using Demo.Application.Contracts;
 using Demo.Domain.Entities;
+using Demo.Domain.Utilities;
 using MapsterMapper;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace Demo.Application.Features.Products.Command
         public async Task<Product> Handle(ProductAddCommand command, CancellationToken cancellationToken)
         {
             var product = _mapper.Map<Product>(command);
+            product.Id = IdentityGenerator.NewSequentialGuid();
             await _unitOfWork.ProductRepository.addAsync(product);
             await _unitOfWork.SaveAsync();
             return product;

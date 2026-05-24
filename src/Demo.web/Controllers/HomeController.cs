@@ -4,6 +4,7 @@ using Demo.Application.Features.Products.Command;
 using Demo.Domain.Entities;
 using Demo.web.Codes;
 using Demo.web.Models;
+using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System.Diagnostics;
@@ -15,28 +16,42 @@ namespace Demo.web.Controllers
        // private readonly IMembership _membership;
         private readonly ILogger<HomeController> _logger;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public HomeController( ILogger<HomeController> logger,IMediator mediator)
+        public HomeController( ILogger<HomeController> logger,IMediator mediator,IMapper mapper)
         {
             
             _logger = logger;
             _mediator = mediator;
+            _mapper = mapper;
         }
 
 
         public IActionResult Index(string? id)
         {
-            var command = new ProductAddCommand
-            {
-                Id = Guid.NewGuid(),
-                Name = "Product 2",
-                Price = 100
-            };
-            var result = _mediator.SendCommandAsync(command).Result;
+            
             //Log.Debug("i am in home controller");
             return View();
         }
 
+        public IActionResult CreateProduct()
+        {
+            var model = new CreateProductModel();
+
+            return View(model);
+        }
+
+        [HttpPost,ValidateAntiForgeryToken]
+        public IActionResult CreateProduct(CreateProductModel model)
+        {
+            if(ModelState.IsValid)
+            {
+                var command = _mapper.Map<ProductAddCommand>(model);
+                var result = _mediator.SendCommandAsync(command).Result;
+            }
+
+            return View(model);
+        }
         public IActionResult CreateAccount()
         {
             var model = new AccountModel();

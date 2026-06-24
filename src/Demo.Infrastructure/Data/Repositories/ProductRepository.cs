@@ -1,4 +1,5 @@
 ﻿using Demo.Application.Contracts;
+using Demo.Application.Features.Products.Query;
 using Demo.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,6 +12,17 @@ namespace Demo.Infrastructure.Data.Repositories
     {
         public ProductRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
+        }
+        public async Task<(IList<Product>, int, int)> GetPagedProducts(GetAllProductsByPagingQuery query,
+            CancellationToken cancellationToken)
+        {
+            return await GetDynamicAsync(x => x.Name.Contains(query.SearchText),
+                query.SortText,
+                null,
+                query.PageIndex,
+                query.PageSize,
+                true,
+                cancellationToken);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Demo.Application.Features.Products.Command
         {
             var product = _mapper.Map<Product>(command);
             product.Id = IdentityGenerator.NewSequentialGuid();
-            await _unitOfWork.ProductRepository.addAsync(product);
+            await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
             await _unitOfWork.SaveAsync();
             return product;
         }

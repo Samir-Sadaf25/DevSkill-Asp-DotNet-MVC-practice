@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Products\Query\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Cortex.Mediator" Version="3.1.2" />
     <PackageReference Include="Mapster" Version="10.0.7" />
   </ItemGroup>

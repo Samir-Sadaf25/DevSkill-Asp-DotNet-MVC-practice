@@ -18,7 +18,7 @@ namespace Demo.Application.Features.Products.Query
 
         public async Task<(IList<Product>, int, int)> Handle(GetAllProductsByPagingQuery query,
             CancellationToken cancellationToken)
-        {
+          {
             return await _applicationUnitOfWork.ProductRepository.GetPagedProducts(query, cancellationToken);
         }
     }

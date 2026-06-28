@@ -16,7 +16,7 @@ namespace Demo.Infrastructure.Data.Repositories
         public async Task<(IList<Product>, int, int)> GetPagedProducts(GetAllProductsByPagingQuery query,
             CancellationToken cancellationToken)
         {
-            return await GetDynamicAsync(x => x.Name.Contains(query.SearchText),
+            return await GetDynamicAsync(x => query.SearchText == null ||  x.Name.Contains(query.SearchText),
                 query.SortText,
                 null,
                 query.PageIndex,

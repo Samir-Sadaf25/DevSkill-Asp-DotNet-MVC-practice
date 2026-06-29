@@ -1,0 +1,28 @@
+﻿@model Demo.web.Areas.Admin.Models.ProductCreateModel
+<form  asp-area="admin" asp-controller="Products" asp-action ="Create" asp-antiforgery="true">
+    <div class="border col-6 p-3 mt-4 border-2 ">
+        <div>
+            <h2 class="text-primary">Create Product</h2>
+        </div>
+        <div class="mb-3 row p-1">
+            <label asp-for="Name">Product Name</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="mb-3 row p-1">
+            <label asp-for="Price">Product Price</label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div class="row text-center">
+            <div class="col-6 col-md-3">
+                <button type="submit" class="btn btn-primary form-control">Create</button>
+            </div>
+            <div class="col-6 col-md-3">
+                <a  class="btn btn-outline-secondary form-control">back to list</a>
+            </div>
+        </div>
+
+    </div>
+
+</form>

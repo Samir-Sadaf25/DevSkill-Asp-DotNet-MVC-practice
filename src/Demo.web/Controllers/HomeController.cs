@@ -34,24 +34,7 @@ namespace Demo.web.Controllers
             return View();
         }
 
-        public IActionResult CreateProduct()
-        {
-            var model = new CreateProductModel();
-
-            return View(model);
-        }
-
-        [HttpPost,ValidateAntiForgeryToken]
-        public IActionResult CreateProduct(CreateProductModel model)
-        {
-            if(ModelState.IsValid)
-            {
-                var command = _mapper.Map<ProductAddCommand>(model);
-                var result = _mediator.SendCommandAsync(command).Result;
-            }
-
-            return View(model);
-        }
+       
         public IActionResult CreateAccount()
         {
             var model = new AccountModel();

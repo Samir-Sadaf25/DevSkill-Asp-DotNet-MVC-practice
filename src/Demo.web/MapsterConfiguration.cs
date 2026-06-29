@@ -1,6 +1,6 @@
 ﻿using Demo.Application.Features.Products.Command;
 using Demo.Domain.Entities;
-using Demo.web.Models;
+using Demo.web.Areas.Admin.Models;
 using Mapster;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace Demo.web
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<ProductAddCommand, Product>();
-            config.NewConfig<CreateProductModel, ProductAddCommand>();
+            config.NewConfig<ProductCreateModel, ProductAddCommand>();
         }
     }
 }

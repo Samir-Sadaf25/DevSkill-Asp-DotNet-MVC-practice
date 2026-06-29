@@ -1,4 +1,5 @@
 ﻿using Cortex.Mediator;
+using Demo.Application.Features.Products.Command;
 using Demo.Application.Features.Products.Query;
 using Demo.Domain.Entities;
 using Demo.Domain.Utilities;
@@ -29,6 +30,27 @@ namespace Demo.web.Areas.Admin.Controllers
         {
             return View();
         }
+
+        public IActionResult Create()
+        {
+            var model = new ProductCreateModel();
+
+            return View(model);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Create(ProductCreateModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var command = _mapper.Map<ProductAddCommand>(model);
+                var result = _mediator.SendCommandAsync(command).Result;
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(model);
+        }
+
 
         [HttpPost]
         public async Task<JsonResult> GetPagedProducts([FromBody] ProductListModel model)

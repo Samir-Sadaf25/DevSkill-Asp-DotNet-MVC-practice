@@ -1,4 +1,5 @@
-﻿@section Styles
+﻿﻿
+@section Styles
 {
     <!-- DataTables Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.min.css">
@@ -13,6 +14,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
         <div class="col-12">
+            <partial name="_ResponsePartial" />
             <div class="card">
                 <div class="card-header border-bottom">
                     <h5 class="card-title mb-0">View Products</h5>
@@ -28,13 +30,7 @@
                         </thead>
                         <tbody>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th>Name</th>
-                                <th>Price</th>
-                                <th></th>
-                            </tr>
-                        </tfoot>
+
                     </table>
                 </div>
             </div>
@@ -68,40 +64,36 @@
         responsive: true,
         autoWidth: true,
         pagingType: "simple_numbers",
-          ajax:{
-             url: "/Admin/Products/GetPagedProducts",
-             type: "POST",
-             contentType:"application/json",
-             dataType:"json",
-             data:function(d)
-             {
-                 return JSON.stringify(d);
-             }
-            },
-            columnDefs:[
-                {
-                    orderable: false,
-                    targets: -1,
-                    render: function(data,type,row)
-                    { return `
-                     <div class="dropdown">
-                         <button class="btn btn-sm btn-outline-primary dropdown-toggle type="button" data-bs-toggle="dropdown"">
-                            Actions
-                         </button>
-                         <ul class="dropdown-menu"> 
-                          <li> <a class="dropdown-item text-info href="" ">View </a></li>
-                          <li> <a class="dropdown-item text-warning href="" ">Edit </a></li>
-                          <li> <button class="dropdown-item text-danger href="" data-id=${data} ">Delete </button></li>
-                         </ul
-
-                     </div>
-                    
-                    `
- 
-                    },
-                }
-            ]
-           });
+        ajax:{
+        url: "/Admin/Products/GetPagedProducts",
+        type: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        data: function(d){
+        return JSON.stringify(d);
+        }
+        },
+        columnDefs: [
+        {
+        orderable: false,
+        targets: -1,
+        render: function(data, type, row){
+        return `
+        <div class="dropdown">
+        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        Actions
+        </button>
+        <ul class="dropdown-menu">
+        <li><a class="dropdown-item text-info href="">View</a></li>
+        <li><a class="dropdown-item text-warning href="">Edit</a></li>
+        <li><button class="dropdown-item text-danger data-id="${data}">Delete</button></li>
+        </ul>
+        </div>
+        `;
+        }
+        }
+        ]
+        });
         });
     </script>
 }

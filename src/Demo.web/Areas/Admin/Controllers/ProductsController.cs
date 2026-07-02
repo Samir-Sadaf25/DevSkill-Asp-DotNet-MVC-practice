@@ -7,8 +7,9 @@ using Demo.web.Areas.Admin.Models;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
-
-
+using Demo.Infrastructure.Extensions;
+using Demo.web.Codes;
+using Demo.Application.Exceptions;
 
 namespace Demo.web.Areas.Admin.Controllers
 {
@@ -34,22 +35,64 @@ namespace Demo.web.Areas.Admin.Controllers
         public IActionResult Create()
         {
             var model = new ProductCreateModel();
-
             return View(model);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult Create(ProductCreateModel model)
+        [HttpPost,ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ProductCreateModel model)
         {
             if (ModelState.IsValid)
             {
-                var command = _mapper.Map<ProductAddCommand>(model);
-                var result = _mediator.SendCommandAsync(command).Result;
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    var command = _mapper.Map<ProductAddCommand>(model);
+                    var result = await _mediator.SendCommandAsync(command);
+
+                    TempData.Put(Constants.ResponseTempKey,
+                        new ResponseModel
+                        {
+                            Message = "Product successfully crated.",
+                            Type = ResponseTypes.Success
+                        });
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch(DuplicateDataException oex)
+                {
+                    TempData.Put(Constants.ResponseTempKey,
+                        new ResponseModel
+                        {
+                            Message = oex.Message,
+                            Type = ResponseTypes.Danger
+                       });
+                }
+                catch (Exception ex)
+                {
+                    const string errorMessage = "Failed to create product.";
+
+                    _logger.LogError(ex, errorMessage);
+
+                    TempData.Put(Constants.ResponseTempKey,
+                        new ResponseModel
+                        {
+                            Message = errorMessage,
+                            Type = ResponseTypes.Danger
+                        });
+                }
+            }
+            else
+            {
+                TempData.Put(Constants.ResponseTempKey,
+                    new ResponseModel
+                    {
+                        Message = "Please provide all information.",
+                        Type = ResponseTypes.Success
+                    });
             }
 
             return View(model);
         }
+
 
 
         [HttpPost]
@@ -81,7 +124,8 @@ namespace Demo.web.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "failed to get product list");
+                _logger.LogError(ex, "Failed to get product list");
+
                 return Json(DataTables.EmptyResult);
             }
         }

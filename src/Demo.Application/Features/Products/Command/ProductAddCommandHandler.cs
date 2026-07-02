@@ -1,5 +1,6 @@
 ﻿using Cortex.Mediator.Commands;
 using Demo.Application.Contracts;
+using Demo.Application.Exceptions;
 using Demo.Domain.Entities;
 using Demo.Domain.Utilities;
 using MapsterMapper;
@@ -14,7 +15,7 @@ namespace Demo.Application.Features.Products.Command
         private readonly IApplicationUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ProductAddCommandHandler(IApplicationUnitOfWork unitOfWork,IMapper mapper)
+        public ProductAddCommandHandler(IApplicationUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -22,11 +23,21 @@ namespace Demo.Application.Features.Products.Command
 
         public async Task<Product> Handle(ProductAddCommand command, CancellationToken cancellationToken)
         {
-            var product = _mapper.Map<Product>(command);
-            product.Id = IdentityGenerator.NewSequentialGuid();
-            await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
-            await _unitOfWork.SaveAsync();
-            return product;
+            var isDuplicateName = await _unitOfWork.ProductRepository.IsDuplicateProductName(command.Name,
+                cancellationToken);
+
+            if (!isDuplicateName)
+            {
+                var product = _mapper.Map<Product>(command);
+                product.Id = IdentityGenerator.NewSequentialGuid();
+
+                await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
+                await _unitOfWork.SaveAsync();
+
+                return product;
+            }
+            else
+                throw new DuplicateDataException("Product name is duplicate");
         }
     }
 }

@@ -11,5 +11,7 @@ namespace Demo.Application.Contracts
     {
         Task<(IList<Product>, int, int)> GetPagedProducts(GetAllProductsByPagingQuery query,
            CancellationToken cancellationToken);
+        Task<bool> IsDuplicateProductName(string name, CancellationToken cancellationToken);
     }
+    
 }

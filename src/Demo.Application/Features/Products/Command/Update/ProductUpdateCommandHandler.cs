@@ -26,7 +26,6 @@ namespace Demo.Application.Features.Products.Command.Update
             if (!isDuplicateName)
             {
                 var product = _mapper.Map<Product>(command);
-                ;
 
                 await _unitOfWork.ProductRepository.EditAsync(product, cancellationToken);
                 await _unitOfWork.SaveAsync();

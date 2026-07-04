@@ -12,6 +12,7 @@ using Demo.web.Codes;
 using Demo.Application.Exceptions;
 using Demo.Application.Features.Products.Command.Update;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Demo.Application.Features.Products.Command.Delete;
 
 namespace Demo.web.Areas.Admin.Controllers
 {
@@ -99,7 +100,7 @@ namespace Demo.web.Areas.Admin.Controllers
 
 
 
-        public async Task<IActionResult> UpdateAsync(Guid id)
+        public async Task<IActionResult> Update(Guid id)
         {
             try
             {
@@ -182,6 +183,38 @@ namespace Demo.web.Areas.Admin.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                var deleteCommand = new ProductDeleteCommand { Id = id };
+                await _mediator.SendCommandAsync(deleteCommand);
+
+                TempData.Put(Constants.ResponseTempKey,
+                    new ResponseModel
+                    {
+                        Message = "Product successfully deleted.",
+                        Type = ResponseTypes.Success
+                    });
+            }
+            catch (Exception ex)
+            {
+                const string errorMessage = "Failed to delete product.";
+
+                _logger.LogError(ex, errorMessage);
+
+                TempData.Put(Constants.ResponseTempKey,
+                    new ResponseModel
+                    {
+                        Message = errorMessage,
+                        Type = ResponseTypes.Danger
+                    });
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]

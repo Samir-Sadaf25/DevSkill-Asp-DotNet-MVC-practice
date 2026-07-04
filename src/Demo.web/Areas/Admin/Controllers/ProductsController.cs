@@ -10,6 +10,8 @@ using System.Web;
 using Demo.Infrastructure.Extensions;
 using Demo.web.Codes;
 using Demo.Application.Exceptions;
+using Demo.Application.Features.Products.Command.Update;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Demo.web.Areas.Admin.Controllers
 {
@@ -32,14 +34,16 @@ namespace Demo.web.Areas.Admin.Controllers
             return View();
         }
 
+        
+
         public IActionResult Create()
         {
-            var model = new ProductCreateModel();
+            var model = new ProductModel();
             return View(model);
         }
 
         [HttpPost,ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductCreateModel model)
+        public async Task<IActionResult> Create(ProductModel model)
         {
             if (ModelState.IsValid)
             {
@@ -51,7 +55,7 @@ namespace Demo.web.Areas.Admin.Controllers
                     TempData.Put(Constants.ResponseTempKey,
                         new ResponseModel
                         {
-                            Message = "Product successfully crated.",
+                            Message = "Product successfully created.",
                             Type = ResponseTypes.Success
                         });
 
@@ -94,6 +98,91 @@ namespace Demo.web.Areas.Admin.Controllers
         }
 
 
+
+        public async Task<IActionResult> UpdateAsync(Guid id)
+        {
+            try
+            {
+                var query = new GetProductByIdQuery { Id = id };
+                var result = await _mediator.SendQueryAsync(query);
+               if(result != null)
+                {
+                    var model = _mapper.Map<ProductModel>(result);
+                    return View(model);
+                }
+                else
+                {
+                    throw new Exception("Failed to load products");
+                }
+            }
+            catch(Exception ex)
+            {
+                const string errorMessage = "Failed to Load product.";
+
+                _logger.LogError(ex, errorMessage);
+
+                TempData.Put(Constants.ResponseTempKey,
+                    new ResponseModel
+                    {
+                        Message = errorMessage,
+                        Type = ResponseTypes.Danger
+                    });
+                return RedirectToAction(nameof(Index));
+            }
+        }
+        [HttpPost,ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(ProductModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var command = _mapper.Map<ProductUpdateCommand>(model);
+                    var result = await _mediator.SendCommandAsync(command);
+                    TempData.Put(Constants.ResponseTempKey,
+                        new ResponseModel
+                        {
+                            Message = "Product successfully updated.",
+                            Type = ResponseTypes.Success
+                        });
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch(DuplicateDataException oex)
+                {
+                    TempData.Put(Constants.ResponseTempKey,
+                        new ResponseModel
+                        {
+                            Message = oex.Message,
+                            Type = ResponseTypes.Danger
+                        });
+                }
+                catch(Exception ex)
+                {
+                    const string errorMessage = "Failed to update product.";
+
+                    _logger.LogError(ex, errorMessage);
+
+                    TempData.Put(Constants.ResponseTempKey,
+                        new ResponseModel
+                        {
+                            Message = errorMessage,
+                            Type = ResponseTypes.Danger
+                        });
+                }
+            }
+            else
+            {
+                TempData.Put(Constants.ResponseTempKey,
+                    new ResponseModel
+                    {
+                        Message = "Please provide all information.",
+                        Type = ResponseTypes.Success
+                    });
+            }
+
+            return View(model);
+        }
 
         [HttpPost]
         public async Task<JsonResult> GetPagedProducts([FromBody] ProductListModel model)

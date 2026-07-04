@@ -3,7 +3,7 @@ using Demo.Domain.Contracts;
 
 namespace Demo.web.Areas.Admin.Models;
 
-public class ProductCreateModel
+public class ProductModel
 {
     public Guid Id { get; set; }
 

@@ -80,14 +80,13 @@
         render: function(data, type, row){
         return `
         <div class="dropdown">
-        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
         Actions
-        </button>
-        <ul class="dropdown-menu">
-        <li><a class="dropdown-item text-info href="">View</a></li>
-        <li><a class="dropdown-item text-warning href="">Edit</a></li>
-        <li><button class="dropdown-item text-danger data-id="${data}">Delete</button></li>
-        </ul>
+             </button>
+            <ul class="dropdown-menu">
+                     <li><a class="dropdown-item text-warning" href="/Admin/Products/Update/${data}">Edit</a></li>
+                     <li><button class="dropdown-item text-danger show-bs-modal" data-id="${data}">Delete</button></li>
+             </ul>
         </div>
         `;
         }

@@ -13,7 +13,7 @@ namespace Demo.web
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<ProductAddCommand, Product>();
-            config.NewConfig<ProductCreateModel, ProductAddCommand>();
+            config.NewConfig<ProductModel, ProductAddCommand>();
         }
     }
 }

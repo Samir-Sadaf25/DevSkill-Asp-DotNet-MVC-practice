@@ -7,31 +7,28 @@ using MapsterMapper;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
-namespace Demo.Application.Features.Products.Command
+namespace Demo.Application.Features.Products.Command.Update
 {
-    public class ProductAddCommandHandler : ICommandHandler<ProductAddCommand, Product>
+    public class ProductUpdateCommandHandler : ICommandHandler<ProductUpdateCommand, Product>
     {
         private readonly IApplicationUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ProductAddCommandHandler(IApplicationUnitOfWork unitOfWork, IMapper mapper)
+        public ProductUpdateCommandHandler(IApplicationUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
-        public async Task<Product> Handle(ProductAddCommand command, CancellationToken cancellationToken)
+        public async Task<Product> Handle(ProductUpdateCommand command, CancellationToken cancellationToken)
         {
-            var isDuplicateName = await _unitOfWork.ProductRepository.IsDuplicateProductName(command.Name,null,
-                cancellationToken);
+            var isDuplicateName = await _unitOfWork.ProductRepository.IsDuplicateProductName(command.Name, command.Id, cancellationToken);
 
             if (!isDuplicateName)
             {
                 var product = _mapper.Map<Product>(command);
-                product.Id = IdentityGenerator.NewSequentialGuid();
+                ;
 
-                await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
+                await _unitOfWork.ProductRepository.EditAsync(product, cancellationToken);
                 await _unitOfWork.SaveAsync();
 
                 return product;

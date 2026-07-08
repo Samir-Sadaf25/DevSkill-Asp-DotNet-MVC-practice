@@ -7,6 +7,6 @@ namespace Demo.Domain.Contracts
     public interface IUnitOfWork
     {
         void save();
-        Task SaveAsync();
+        Task SaveAsync(CancellationToken cancellationToken);
     }
 }

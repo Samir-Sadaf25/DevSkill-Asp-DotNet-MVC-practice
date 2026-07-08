@@ -32,7 +32,7 @@ namespace Demo.Application.Features.Products.Command
                 product.Id = IdentityGenerator.NewSequentialGuid();
 
                 await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
-                await _unitOfWork.SaveAsync();
+                await _unitOfWork.SaveAsync(cancellationToken);
 
                 return product;
             }

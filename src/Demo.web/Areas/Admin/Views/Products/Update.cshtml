@@ -10,7 +10,7 @@
                 </div>
                 <div class="card-body">
                     <partial name="_ResponsePartial" />
-                    <form method="post" asp-area="admin" asp-controller="products" asp-action="Update" asp-antiforgery="true">
+                    <form method="post" asp-area="admin" asp-controller="products" asp-action="Update" asp-antiforgery="true" enctype="multipart/form-data">
                         <div class="mb-6">
                             <label class="form-label" asp-for="Name">Name</label>
                             <input type="text" class="form-control" asp-for="Name" placeholder="Camera" />
@@ -18,6 +18,19 @@
                         <div class="mb-6">
                             <label class="form-label" asp-for="Price">Price</label>
                             <input type="number" class="form-control" asp-for="Price" />
+                        </div>
+                        <div class="mb-6">
+                            <label asp-for="Image" class="form-label">Picture</label>
+                            @if (!string.IsNullOrEmpty(Model.ImageName))
+                            {
+                                <div class="mb-3">
+                                    <img src="/uploads/images/@Model.ImageName" alt="Current Image"
+                                         class="img-thumbnail" style="width:100px; height:100px; object-fit:cover;" />
+                                </div>
+                            }
+                            <input asp-for="Image" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp" />
+                            <small class="text-muted">Allowed: JPG, JPEG, PNG, WEBP.</small><br />
+                            <span asp-validation-for="Image" class="text-danger"></span>
                         </div>
                         <button type="submit" class="btn btn-primary">Send</button>
 

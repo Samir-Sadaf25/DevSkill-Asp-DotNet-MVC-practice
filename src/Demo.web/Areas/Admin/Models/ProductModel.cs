@@ -13,4 +13,8 @@ public class ProductModel
 
     [Range(0.01, 999999)]
     public double Price { get; set; }
+
+    [Display(Name ="Picture")]
+    public IFormFile? Image { get; set; }
+    public string? ImageName { get; set; }
 }

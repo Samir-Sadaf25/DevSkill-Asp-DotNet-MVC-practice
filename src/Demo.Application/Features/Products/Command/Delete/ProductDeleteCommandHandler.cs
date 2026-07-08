@@ -19,7 +19,7 @@ namespace Demo.Application.Features.Products.Command.Delete
         public async Task Handle(ProductDeleteCommand command, CancellationToken cancellationToken)
         {
             await _unitOfWork.ProductRepository.RemoveAsync(command.Id, cancellationToken);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.SaveAsync(cancellationToken);
         }
     }
 }

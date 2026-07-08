@@ -24,6 +24,7 @@
                     <table id="products" class="table table-bordered table-hover w-100">
                         <thead>
                             <tr>
+                                <th>Picture</th>
                                 <th>Name</th>
                                 <th>Price</th>
                                 <th></th>
@@ -75,7 +76,17 @@
           }
         },
         columnDefs: [
-        {
+              {
+                orderable: false,
+                targets: 0,
+                render: function(data, type, row){
+                  return `
+                  <img src="${data}" alt="Product Image" class="img-thumbnail" style="width:60px; height: 60px; object-fit: cover;" />
+                      `;
+                   } 
+              },
+            
+            {
            orderable: false,
             targets: -1,
            render: function(data, type, row){
@@ -90,7 +101,7 @@
                </ul>
             </div>
         `;
-        }
+          }
         }
         ]
         });

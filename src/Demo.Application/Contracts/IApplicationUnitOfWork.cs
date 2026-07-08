@@ -1,4 +1,5 @@
-﻿using Demo.Domain.Contracts;
+﻿using Demo.Application.Contracts.Repositories;
+using Demo.Domain.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Text;

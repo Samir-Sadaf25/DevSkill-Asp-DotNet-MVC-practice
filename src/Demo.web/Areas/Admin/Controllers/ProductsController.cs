@@ -13,8 +13,9 @@ using Demo.Application.Exceptions;
 using Demo.Application.Features.Products.Command.Update;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Demo.Application.Features.Products.Command.Delete;
+using Demo.Application.Contracts.Services;
 
-namespace Demo.web.Areas.Admin.Controllers
+namespace Demo.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ProductsController : Controller
@@ -22,12 +23,15 @@ namespace Demo.web.Areas.Admin.Controllers
         private readonly ILogger<ProductsController> _logger;
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IFileStorageService _fileStorageService;
 
-        public ProductsController(ILogger<ProductsController> logger,IMediator mediator,IMapper mapper)
+        public ProductsController(ILogger<ProductsController> logger,
+            IMediator mediator, IMapper mapper, IFileStorageService fileStorageService)
         {
-            _mediator = mediator;
             _logger = logger;
+            _mediator = mediator;
             _mapper = mapper;
+            _fileStorageService = fileStorageService;
         }
 
         public IActionResult Index()
@@ -35,22 +39,34 @@ namespace Demo.web.Areas.Admin.Controllers
             return View();
         }
 
-        
-
         public IActionResult Create()
         {
             var model = new ProductModel();
             return View(model);
         }
 
-        [HttpPost,ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductModel model)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ProductModel model, CancellationToken cancellationToken)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    string? imageName = null;
+                    if (model.Image != null)
+                    {
+                        await using var stream = model.Image.OpenReadStream();
+
+                        imageName = await _fileStorageService.SaveImageAsync(
+                            stream,
+                            model.Image.FileName,
+                            "images",
+                            cancellationToken);
+                    }
+
                     var command = _mapper.Map<ProductAddCommand>(model);
+                    command.ImageName = imageName!;
+
                     var result = await _mediator.SendCommandAsync(command);
 
                     TempData.Put(Constants.ResponseTempKey,
@@ -62,14 +78,14 @@ namespace Demo.web.Areas.Admin.Controllers
 
                     return RedirectToAction(nameof(Index));
                 }
-                catch(DuplicateDataException oex)
+                catch (DuplicateDataException oex)
                 {
                     TempData.Put(Constants.ResponseTempKey,
                         new ResponseModel
                         {
                             Message = oex.Message,
                             Type = ResponseTypes.Danger
-                       });
+                        });
                 }
                 catch (Exception ex)
                 {
@@ -98,27 +114,24 @@ namespace Demo.web.Areas.Admin.Controllers
             return View(model);
         }
 
-
-
         public async Task<IActionResult> Update(Guid id)
         {
             try
             {
                 var query = new GetProductByIdQuery { Id = id };
                 var result = await _mediator.SendQueryAsync(query);
-               if(result != null)
+
+                if (result != null)
                 {
                     var model = _mapper.Map<ProductModel>(result);
                     return View(model);
                 }
                 else
-                {
-                    throw new Exception("Failed to load products");
-                }
+                    throw new Exception("Failed to load product");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                const string errorMessage = "Failed to Load product.";
+                const string errorMessage = "Failed to load product.";
 
                 _logger.LogError(ex, errorMessage);
 
@@ -128,18 +141,65 @@ namespace Demo.web.Areas.Admin.Controllers
                         Message = errorMessage,
                         Type = ResponseTypes.Danger
                     });
+
                 return RedirectToAction(nameof(Index));
             }
         }
-        [HttpPost,ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(ProductModel model)
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(ProductModel model, CancellationToken cancellationToken)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var query = new GetProductByIdQuery { Id = model.Id };
+                    var product = await _mediator.SendQueryAsync(query, cancellationToken);
+
+                    if (product is null)
+                    {
+                        TempData.Put(Constants.ResponseTempKey, new ResponseModel
+                        {
+                            Message = "Product doesn't exist",
+                            Type = ResponseTypes.Danger
+                        });
+
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    var oldImageName = product.ImageName;
+                    var imageName = oldImageName;
+
+                    if (model.Image != null)
+                    {
+                        await using var stream = model.Image.OpenReadStream();
+
+                        imageName = await _fileStorageService.SaveImageAsync(
+                            stream,
+                            model.Image.FileName,
+                            "images",
+                            cancellationToken);
+                    }
+
                     var command = _mapper.Map<ProductUpdateCommand>(model);
-                    var result = await _mediator.SendCommandAsync(command);
+                    command.ImageName = imageName;
+                    var result = await _mediator.SendCommandAsync(command, cancellationToken);
+
+                    if (model.Image != null && !string.IsNullOrEmpty(oldImageName) && oldImageName != imageName)
+                    {
+                        try
+                        {
+                            await _fileStorageService.DeleteImageAsync(
+                                oldImageName,
+                                "images",
+                                cancellationToken);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, $"Failed to delete old image for product id: {model.Id}");
+                        }
+                    }
+
                     TempData.Put(Constants.ResponseTempKey,
                         new ResponseModel
                         {
@@ -149,7 +209,7 @@ namespace Demo.web.Areas.Admin.Controllers
 
                     return RedirectToAction(nameof(Index));
                 }
-                catch(DuplicateDataException oex)
+                catch (DuplicateDataException oex)
                 {
                     TempData.Put(Constants.ResponseTempKey,
                         new ResponseModel
@@ -158,7 +218,7 @@ namespace Demo.web.Areas.Admin.Controllers
                             Type = ResponseTypes.Danger
                         });
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     const string errorMessage = "Failed to update product.";
 
@@ -183,6 +243,42 @@ namespace Demo.web.Areas.Admin.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> GetPagedProducts([FromBody] ProductListModel model)
+        {
+            try
+            {
+                var query = _mapper.Map<GetAllProductsByPagingQuery>(model);
+                query.SearchText = model.Search.Value;
+                query.SortText = model.FormatSortExpression("Name", "Price");
+
+                var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetAllProductsByPagingQuery,
+                    (IList<Product>, int, int)>(query);
+
+                var product = new
+                {
+                    recordsTotal = total,
+                    recordsFiltered = totalDisplay,
+                    data = (from item in items
+                            select new string[]
+                            {
+                                $"/uploads/images/{HttpUtility.HtmlEncode(item.ImageName)}",
+                                HttpUtility.HtmlEncode(item.Name),
+                                item.Price.ToString(),
+                                item.Id.ToString()
+                            }).ToArray()
+                };
+
+                return Json(product);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get product list");
+
+                return Json(DataTables.EmptyResult);
+            }
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -215,41 +311,6 @@ namespace Demo.web.Areas.Admin.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> GetPagedProducts([FromBody] ProductListModel model)
-        {
-            try
-            {
-                var query = _mapper.Map<GetAllProductsByPagingQuery>(model);
-                query.SearchText = model.Search.Value;
-                query.SortText = model.FormatSortExpression("Name", "Price");
-
-                var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetAllProductsByPagingQuery,
-                    (IList<Product>, int, int)>(query);
-
-                var product = new
-                {
-                    recordsTotal = total,
-                    recordsFiltered = totalDisplay,
-                    data = (from item in items
-                            select new string[]
-                            {
-                                HttpUtility.HtmlEncode(item.Name),
-                                item.Price.ToString(),
-                                item.Id.ToString()
-                            }).ToArray()
-                };
-
-                return Json(product);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to get product list");
-
-                return Json(DataTables.EmptyResult);
-            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Demo.Application.Contracts;
+﻿using Demo.Application.Contracts.Repositories;
 using Demo.Application.Features.Products.Query;
 using Demo.Domain.Entities;
 using Microsoft.EntityFrameworkCore;

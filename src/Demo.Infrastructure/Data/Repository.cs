@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Linq.Dynamic.Core;
+
 namespace Demo.Infrastructure.Data
 {
     public abstract class Repository<TAggregateRoot, TKey> : IRepository<TAggregateRoot, TKey>, IDisposable
-          where TAggregateRoot : class, IAggregateRoot<TKey>
-          where TKey : IComparable
+        where TAggregateRoot : class, IAggregateRoot<TKey>
+        where TKey : IComparable
     {
         private DbContext _dbContext;
         private DbSet<TAggregateRoot> _dbSet;

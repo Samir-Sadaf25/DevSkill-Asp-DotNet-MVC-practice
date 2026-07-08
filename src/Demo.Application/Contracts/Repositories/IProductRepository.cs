@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Demo.Application.Contracts
+namespace Demo.Application.Contracts.Repositories
 {
     public interface IProductRepository : IRepository<Product,Guid>
     {

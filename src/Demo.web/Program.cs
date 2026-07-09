@@ -78,16 +78,17 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     //builder.Host.ConfigureContainer<ContainerBuilder>(ContainerBuilder =>
     //{
     //    ContainerBuilder.RegisterModule(new WebModule(connectionString)); // binding gula akhane boshbe
-        
+
     //});
 
     #endregion
 
 
+    #region Identity Configuration
+    builder.Services.AddIdentity();
+    #endregion
 
-    builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+    builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 

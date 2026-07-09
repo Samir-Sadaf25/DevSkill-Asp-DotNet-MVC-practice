@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Demo.Application\Demo.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Identity\" />
+  </ItemGroup>
+
 </Project>

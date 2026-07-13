@@ -1,16 +1,9 @@
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using Demo.web;
-using Demo.web.Codes;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Core.Types;
 using Serilog;
 using Demo.Infrastructure.Extensions;
 using Demo.Infrastructure.Data;
 using System.Reflection;
 using Cortex.Mediator.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Demo.Application.Features.Products.Command;
 using Mapster;
 
@@ -121,8 +114,7 @@ app.MapStaticAssets();
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-app.MapRazorPages()
-   .WithStaticAssets();
+
 
     Log.Information("application started");
 
@@ -137,3 +129,4 @@ finally
 {
     Log.CloseAndFlush();
 }
+

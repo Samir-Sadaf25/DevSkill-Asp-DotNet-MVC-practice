@@ -35,6 +35,7 @@ namespace Demo.Infrastructure.Extensions
                 options.Lockout.AllowedForNewUsers = true;
                 // User settings
                 options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = false;
             });
         }
     }

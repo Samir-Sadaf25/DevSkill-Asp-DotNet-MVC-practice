@@ -1,9 +1,11 @@
 ﻿using Demo.Infrastructure.Identity;
 using Demo.web.Models.Account;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Text;
 
 namespace Demo.web.Controllers
@@ -94,6 +96,79 @@ namespace Demo.web.Controllers
             }
 
             return View(model);
+        }
+
+        
+        public async Task<IActionResult> Login(string? returnUrl = null)
+        {
+            var model = new LoginModel();
+           
+            returnUrl ??= Url.Content("~/");
+
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+            model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            model.ReturnUrl = returnUrl;
+            return View(model);
+        }
+        [HttpPost] [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            model.ReturnUrl ??= Url.Content("~/");
+
+            model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            if (ModelState.IsValid)
+            {
+                // This doesn't count login failures towards account lockout
+                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("User logged in.");
+                    return LocalRedirect(model.ReturnUrl);
+                }
+                if (result.RequiresTwoFactor)
+                {
+                    return RedirectToAction("LoginWith2fa","Account", new { ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+                }
+                if (result.IsLockedOut)
+                {
+                    _logger.LogWarning("User account locked out.");
+                    return RedirectToAction("./Lockout","Account");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View(model);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(string? returnUrl = null)
+        {
+            await _signInManager.SignOutAsync();
+            if (returnUrl != null)
+            {
+                return LocalRedirect(returnUrl);
+            }
+            else
+            {
+                // This needs to be a redirect so that the browser performs a new
+                // request and the identity for the user gets updated.
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        public async Task<IActionResult> AccessDenied()
+        {
+            return View();
         }
 
         private ApplicationUser CreateUser()

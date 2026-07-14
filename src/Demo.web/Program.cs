@@ -6,6 +6,7 @@ using System.Reflection;
 using Cortex.Mediator.DependencyInjection;
 using Demo.Application.Features.Products.Command;
 using Mapster;
+using Microsoft.AspNetCore.Identity;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("Logs/web-log-.log", rollingInterval: RollingInterval.Day)

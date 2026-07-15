@@ -11,14 +11,13 @@ using Demo.Infrastructure.Extensions;
 using Demo.web.Codes;
 using Demo.Application.Exceptions;
 using Demo.Application.Features.Products.Command.Update;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Demo.Application.Features.Products.Command.Delete;
 using Demo.Application.Contracts.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    [Area("Admin"), Authorize(Roles = "Admin")]
+    [Area("Admin"), Authorize(Policy = "CustomPolicy")]
     public class ProductsController : Controller
     {
         private readonly ILogger<ProductsController> _logger;
@@ -283,7 +282,7 @@ namespace Demo.Web.Areas.Admin.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        [Authorize(Roles = "SuparAdmin")] // only suparAdmin can delete..other update create oparation admin can do 
+        //[Authorize(Roles = "SuparAdmin")] // only suparAdmin can delete..other update create oparation admin can do 
         public async Task<IActionResult> Delete(Guid id)
         {
             try

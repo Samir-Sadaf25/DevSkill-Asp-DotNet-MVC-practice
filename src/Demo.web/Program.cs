@@ -80,6 +80,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
     #region Identity Configuration
     builder.Services.AddIdentity();
+    builder.Services.AddPolicyAuthorization();
     #endregion
 
     builder.Services.AddControllersWithViews();

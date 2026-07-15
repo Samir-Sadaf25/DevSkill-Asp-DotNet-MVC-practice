@@ -37,6 +37,20 @@ namespace Demo.Infrastructure.Extensions
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = false;
             });
+
         }
+
+        public static void AddPolicyAuthorization(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CustomPolicy", policy =>
+                {
+                    policy.RequireRole("Marketing");
+                    policy.RequireRole("Accounting");
+                });
+            });
+        }
+
     }
 }

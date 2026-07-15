@@ -1,4 +1,5 @@
 ﻿@model LoginModel
+
 @{
     ViewData["Title"] = "Log in";
 }
@@ -7,7 +8,7 @@
 <div class="row">
     <div class="col-md-4">
         <section>
-            <form id="account" method="post" asp-area="" asp-controller="Account" asp-action="Login">
+            <form id="account" method="post" asp-area="" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">
                 <h2>Use a local account to log in.</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
@@ -32,13 +33,13 @@
                 </div>
                 <div>
                     <p>
-                        <a id="forgot-password" asp-area="" asp-controller="Account" asp-action="ForgotPassword">Forgot your password?</a>
+                        <a id="forgot-password" asp-area="" asp-action="ForgotPassword" asp-controller="Account">Forgot your password?</a>
                     </p>
                     <p>
-                        <a asp-area="" asp-controller="Account" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                        <a asp-area="" asp-action="Register" asp-controller="Account" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
                     </p>
                     <p>
-                        <a id="resend-confirmation" asp-area="" asp-controller="Account" asp-action="ResendEmailConfirmation">Resend email confirmation</a>
+                        <a id="resend-confirmation" asp-area="" asp-action="ResendEmailConfirmation" asp-controller="Account">Resend email confirmation</a>
                     </p>
                 </div>
             </form>
@@ -62,7 +63,7 @@
             }
                 else
             {
-                <form id="external-account" asp-area="" asp-controller="Account" asp-page="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                <form id="external-account" asp-area="" asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                     <div>
                         <p>
                             @foreach (var provider in Model.ExternalLogins!)

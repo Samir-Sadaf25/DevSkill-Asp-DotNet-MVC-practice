@@ -98,11 +98,11 @@ namespace Demo.web.Controllers
             return View(model);
         }
 
-        
+
         public async Task<IActionResult> Login(string? returnUrl = null)
         {
             var model = new LoginModel();
-           
+
             returnUrl ??= Url.Content("~/");
 
             // Clear the existing external cookie to ensure a clean login process
@@ -111,9 +111,11 @@ namespace Demo.web.Controllers
             model.ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             model.ReturnUrl = returnUrl;
+
             return View(model);
         }
-        [HttpPost] [ValidateAntiForgeryToken]
+
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
             model.ReturnUrl ??= Url.Content("~/");
@@ -132,12 +134,12 @@ namespace Demo.web.Controllers
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction("LoginWith2fa","Account", new { ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction("LoginWith2fa", "Account", new { ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User account locked out.");
-                    return RedirectToAction("./Lockout","Account");
+                    return RedirectToAction("Lockout", "Account");
                 }
                 else
                 {

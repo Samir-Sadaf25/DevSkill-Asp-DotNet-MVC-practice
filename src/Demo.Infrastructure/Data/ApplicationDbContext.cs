@@ -15,5 +15,13 @@ namespace Demo.Infrastructure.Data
        ApplicationUserToken>(options)
     {
         public DbSet<Product> products { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<ApplicationRole>().HasData(Seeds.RoleSeeds.GetRoles());
+
+            base.OnModelCreating(builder);
+        }
+
     }
 }

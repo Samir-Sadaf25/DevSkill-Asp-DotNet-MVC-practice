@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    [Area("Admin"), Authorize(Policy = "AgeRestriction")]
+    [Area("Admin"), Authorize(Policy = "CustomAgeRequirement")]
     public class ProductsController : Controller
     {
         private readonly ILogger<ProductsController> _logger;

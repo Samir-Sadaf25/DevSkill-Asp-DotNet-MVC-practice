@@ -1,5 +1,6 @@
 ﻿using Demo.Infrastructure.Data;
 using Demo.Infrastructure.Identity;
+using Demo.Infrastructure.Identity.Requirements;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -53,6 +54,10 @@ namespace Demo.Infrastructure.Extensions
                 options.AddPolicy("AgeRestriction", policy =>
                 {
                     policy.RequireClaim("age", "18");
+                });
+                options.AddPolicy("CustomAgeRequirement", policy =>
+                {
+                    policy.Requirements.Add(new AgeRequirement());
                 });
 
             });

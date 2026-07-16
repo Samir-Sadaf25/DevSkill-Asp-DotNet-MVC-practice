@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Security.Claims;
 using System.Text;
 
 namespace Demo.web.Controllers
@@ -67,6 +68,8 @@ namespace Demo.web.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "Member");
+                    var age = DateTime.Now.Year - model.DateOfBirth.Year;
+                    await _userManager.AddClaimAsync(user, new Claim("age", age.ToString()));
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

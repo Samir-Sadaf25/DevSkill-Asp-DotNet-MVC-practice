@@ -49,6 +49,12 @@ namespace Demo.Infrastructure.Extensions
                     policy.RequireRole("Marketing");
                     policy.RequireRole("Accounting");
                 });
+
+                options.AddPolicy("AgeRestriction", policy =>
+                {
+                    policy.RequireClaim("age", "18");
+                });
+
             });
         }
 

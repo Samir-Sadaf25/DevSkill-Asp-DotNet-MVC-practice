@@ -9,5 +9,6 @@ namespace Demo.Application.Contracts
      public interface IApplicationUnitOfWork : IUnitOfWork
     {
         IProductRepository ProductRepository { get; }
+        ISqlUtility SqlUtility { get; }
     }
 }

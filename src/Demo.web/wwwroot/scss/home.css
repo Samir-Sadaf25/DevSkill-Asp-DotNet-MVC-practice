@@ -1,0 +1,9 @@
+﻿div {
+  background-color: gainsboro;
+}
+div button {
+  background-color: darkkhaki;
+}
+div button:hover {
+  background-color: green;
+}

@@ -1,0 +1,13 @@
+﻿div {
+    background-color: gainsboro;
+
+    button {
+        background-color: darkkhaki;
+
+        &:hover {
+            background-color: green;
+        }
+    }
+
+   
+}

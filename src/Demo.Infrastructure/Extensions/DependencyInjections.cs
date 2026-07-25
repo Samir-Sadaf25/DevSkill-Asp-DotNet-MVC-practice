@@ -22,6 +22,8 @@ namespace Demo.Infrastructure.Extensions
             services.AddScoped<IProductRepository,ProductRepository>();
             services.AddSingleton<IFileStorageService, FileStorageService>();
             services.AddSingleton<IAuthorizationHandler, AgeRequirementHandler>();
+            services.AddSingleton<IServerTime,ServerTime>();
+
             //builder.Services.AddScoped<IMembership, ImprovedMembership>(); // one instance per http lifecycle
             //builder.Services.AddSingleton<IMembership, ImprovedMembership>(); // one instance per application lifecycle
             //builder.Services.AddTransient<IMembership, ImprovedMembership>();// always new instance

@@ -14,10 +14,11 @@ using Demo.Application.Features.Products.Command.Update;
 using Demo.Application.Features.Products.Command.Delete;
 using Demo.Application.Contracts.Services;
 using Microsoft.AspNetCore.Authorization;
+using Demo.Domain.DTOs;
 
 namespace Demo.Web.Areas.Admin.Controllers
 {
-    [Area("Admin"), Authorize(Policy = "CustomAgeRequirement")]
+    [Area("Admin")]
     public class ProductsController : Controller
     {
         private readonly ILogger<ProductsController> _logger;
@@ -39,11 +40,17 @@ namespace Demo.Web.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult IndexSP()
+        {
+            return View();
+        }
+
         public IActionResult Create()
         {
             var model = new ProductModel();
             return View(model);
         }
+
 
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductModel model, CancellationToken cancellationToken)
@@ -245,6 +252,44 @@ namespace Demo.Web.Areas.Admin.Controllers
             return View(model);
         }
 
+
+        [HttpPost]
+        public async Task<JsonResult> GetPagedProductsSP([FromBody] ProductListSPModel model)
+        {
+            try
+            {
+                var query = _mapper.Map<GetAllProductsByPagingSPQuery>(model);
+                query.SortText = query.FormatSortExpression(["Name", "Name", "Price", "Name"]);
+
+                var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetAllProductsByPagingSPQuery,
+                    (IList<PagedProductListDTO>, int, int)>(query);
+
+                var product = new
+                {
+                    recordsTotal = total,
+                    recordsFiltered = totalDisplay,
+                    data = (from item in items
+                            select new string[]
+                            {
+                                $"/uploads/images/{HttpUtility.HtmlEncode(item.ImageName)}",
+                                HttpUtility.HtmlEncode(item.Name),
+                                item.Price.ToString(),
+                                item.Id.ToString()
+                            }).ToArray()
+                };
+
+                return Json(product);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get product list");
+
+                return Json(DataTables.EmptyResult);
+            }
+        }
+
+
+
         [HttpPost]
         public async Task<JsonResult> GetPagedProducts([FromBody] ProductListModel model)
         {
@@ -252,7 +297,7 @@ namespace Demo.Web.Areas.Admin.Controllers
             {
                 var query = _mapper.Map<GetAllProductsByPagingQuery>(model);
                 query.SearchText = model.Search.Value;
-                query.SortText = model.FormatSortExpression("Name", "Price");
+                query.SortText = model.FormatSortExpression("Name","Name", "Price","Name");
 
                 var (items, total, totalDisplay) = await _mediator.SendQueryAsync<GetAllProductsByPagingQuery,
                     (IList<Product>, int, int)>(query);

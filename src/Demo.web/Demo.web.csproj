@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.0.2" />
     <PackageReference Include="Cortex.Mediator" Version="3.1.2" />
     <PackageReference Include="Mapster.DependencyInjection" Version="10.0.10" />
@@ -35,6 +39,10 @@
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="wwwroot\uploads\" />
     <Folder Include="wwwroot\sneat\assests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
   </ItemGroup>
 
 </Project>

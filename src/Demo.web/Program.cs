@@ -83,6 +83,10 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     builder.Services.AddPolicyAuthorization();
     #endregion
 
+    #region Docker ip correction
+    builder.WebHost.UseUrls("http://*:80");
+    #endregion
+
     builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -103,8 +107,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
-
-app.MapStaticAssets();
+    app.UseStaticFiles();
+    app.MapStaticAssets();
 
     app.MapControllerRoute(
         name: "area",

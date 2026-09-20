@@ -1,0 +1,17 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: src/Demo.web/Dockerfile
+    image: demo:v1
+    env_file:
+      - src/Demo.web/web.env
+    volumes:
+      - demoweb-data:/app/Logs/
+    ports:
+      - "8000:80"
+    entrypoint: ["dotnet", "Demo.web.dll"]
+
+volumes:
+  demoweb-data:
+    external: true
